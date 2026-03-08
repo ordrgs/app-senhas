@@ -263,7 +263,20 @@ passwordForm.onsubmit = async (e) => {
 function renderPasswords(filter = '') {
     passwordListContainer.innerHTML = '';
 
-    const term = filter.toLowerCase();
+    const term = filter.trim().toLowerCase();
+    
+    // Se o termo de busca estiver vazio, não mostra nada
+    if (!term) {
+        passwordCount.textContent = '0';
+        emptyState.classList.remove('hidden');
+        emptyState.innerHTML = `
+            <span class="material-icons-round empty-icon">search</span>
+            <h3>Busque suas senhas</h3>
+            <p>Digite o nome do cliente, pedido ou série para visualizar.</p>
+        `;
+        return;
+    }
+
     const filtered = localPasswords.filter(p => {
         return p.cliente.toLowerCase().includes(term) ||
             p.pedido.toLowerCase().includes(term) ||
@@ -274,6 +287,11 @@ function renderPasswords(filter = '') {
 
     if (filtered.length === 0) {
         emptyState.classList.remove('hidden');
+        emptyState.innerHTML = `
+            <span class="material-icons-round empty-icon">assignment_late</span>
+            <h3>Nenhuma senha encontrada</h3>
+            <p>Sua busca não retornou resultados.</p>
+        `;
     } else {
         emptyState.classList.add('hidden');
 
