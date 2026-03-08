@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 /**
@@ -91,13 +91,25 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+// Tratar o retorno do redirecionamento (caso tenha acabado de fazer login pelo celular)
+getRedirectResult(auth).then((result) => {
+    if (result) {
+        // Login com sucesso após redirecionamento (opcional: exibir toast)
+        console.log("Login realizado com sucesso");
+    }
+}).catch((error) => {
+    console.error("Erro no retorno do login:", error);
+    showToast('Erro ao retornar do login.', 'error');
+});
+
 btnLogin.onclick = async () => {
     const provider = new GoogleAuthProvider();
+    // Em dispositivos móveis, signInWithRedirect é 100% mais confiável que Popup.
     try {
-        await signInWithPopup(auth, provider);
+        await signInWithRedirect(auth, provider);
     } catch (error) {
-        console.error("Erro no login:", error);
-        showToast('Erro ao fazer login. Tente novamente.', 'error');
+        console.error("Erro ao iniciar login:", error);
+        showToast('Erro ao redirecionar para o Google.', 'error');
     }
 };
 
