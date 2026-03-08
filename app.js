@@ -29,6 +29,7 @@ const db = getFirestore(app);
  * ==========================================
  */
 let localPasswords = [];
+let showAll = false; // Novo estado para controlar exibição total
 
 // DOM Elements
 const btnLogin = document.getElementById('btn-login');
@@ -56,6 +57,7 @@ const searchInput = document.getElementById('search-input');
 
 const statusBar = document.getElementById('status-bar');
 const statusText = document.getElementById('status-text');
+const btnShowAll = document.getElementById('btn-show-all');
 
 /**
  * ==========================================
@@ -280,13 +282,31 @@ async function deletePassword(passwordId) {
     }
 }
 
+btnShowAll.onclick = () => {
+    showAll = !showAll;
+    
+    // Atualiza o ícone e cor do botão
+    const icon = btnShowAll.querySelector('.material-icons-round');
+    if (showAll) {
+        icon.textContent = 'visibility_off';
+        btnShowAll.classList.add('active');
+        showToast('Mostrando todas as senhas', 'info');
+    } else {
+        icon.textContent = 'visibility';
+        btnShowAll.classList.remove('active');
+        showToast('Senhas ocultas', 'info');
+    }
+    
+    renderPasswords(searchInput.value);
+};
+
 function renderPasswords(filter = '') {
     passwordListContainer.innerHTML = '';
 
     const term = filter.trim().toLowerCase();
     
-    // Se o termo de busca estiver vazio, não mostra nada
-    if (!term) {
+    // Se o termo de busca estiver vazio E não estiver no modo "Show All", não mostra nada
+    if (!term && !showAll) {
         passwordCount.textContent = '0';
         emptyState.classList.remove('hidden');
         emptyState.innerHTML = `
