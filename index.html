@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gerenciador de Senhas</title>
+    <meta name="description" content="Gerenciador seguro de senhas de 4 dígitos usando Google Sheets">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="material-icons-round">vpn_key</span>
+                    <h1>Senhas</h1>
+                </div>
+                <!-- Login Button / Profile -->
+                <div id="auth-container">
+                    <button id="btn-login" class="btn btn-outline" style="display: none;">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" class="g-logo">
+                        Entrar
+                    </button>
+                    <div id="user-profile" style="display: none;">
+                        <img id="user-avatar" src="" alt="Avatar">
+                        <button id="btn-logout" class="btn-icon" title="Sair">
+                            <span class="material-icons-round">logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="status-bar" class="status-bar hidden">
+                <span class="material-icons-round status-icon">cloud_sync</span>
+                <span id="status-text">Sincronizando...</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-view" class="view hidden">
+            <!-- Search & Filter -->
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="material-icons-round">search</span>
+                    <input type="text" id="search-input" placeholder="Buscar cliente, pedido ou série...">
+                </div>
+            </div>
+
+            <!-- Add New Password Form -->
+            <section class="card mb-4" id="add-form-container">
+                <div class="card-header" id="toggle-form-btn">
+                    <h2>Nova Senha</h2>
+                    <span class="material-icons-round expand-icon">expand_more</span>
+                </div>
+                <form id="password-form" class="form-content hidden">
+                    <div class="input-group">
+                        <label for="cliente">Cliente</label>
+                        <input type="text" id="cliente" required autocomplete="off" placeholder="Nome do cliente">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="pedido">Nº Pedido</label>
+                            <input type="text" id="pedido" required autocomplete="off" placeholder="Ex: 12345">
+                        </div>
+                        <div class="input-group">
+                            <label for="serie">Nº Série</label>
+                            <input type="text" id="serie" required autocomplete="off" placeholder="Ex: S-9988">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="senha">Senha (4 dígitos)</label>
+                        <div class="password-input-wrapper">
+                            <input type="text" id="senha" required pattern="\d{4}" maxlength="4" autocomplete="off" placeholder="0000" inputmode="numeric">
+                            <button type="button" id="btn-generate" class="btn-icon" title="Gerar senha aleatória">
+                                <span class="material-icons-round">autorenew</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-add-password" class="btn btn-primary w-100" disabled>
+                        <span class="material-icons-round">add_circle</span>
+                        Adicionar Senha
+                    </button>
+                </form>
+            </section>
+
+            <!-- Password List -->
+            <section class="password-list-container">
+                <div class="list-header">
+                    <h2>Senhas Salvas</h2>
+                    <span id="password-count" class="badge">0</span>
+                </div>
+                
+                <div id="loading-spinner" class="spinner-container hidden">
+                    <div class="spinner"></div>
+                    <p>Carregando dados...</p>
+                </div>
+
+                <div id="password-list" class="password-list">
+                    <!-- Cards will be injected here via JS -->
+                </div>
+
+                <div id="empty-state" class="empty-state">
+                    <span class="material-icons-round empty-icon">assignment</span>
+                    <h3>Nenhuma senha encontrada</h3>
+                    <p>Adicione uma nova senha acima ou faça login para carregar.</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Floating Action Button for Add (Mobile) -->
+        <button id="fab-add" class="fab hidden">
+            <span class="material-icons-round">add</span>
+        </button>
+    </div>
+
+    <!-- App Logic (Firebase Modules API) -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
