@@ -95,11 +95,11 @@ let isLoggingIn = false;
 
 btnLogin.onclick = async () => {
     if (isLoggingIn) return;
-    
+
     isLoggingIn = true;
     const originalText = btnLogin.innerHTML;
     btnLogin.innerHTML = '<span class="material-icons-round" style="animation: spin 1s linear infinite;">autorenew</span> Aguarde...';
-    
+
     const provider = new GoogleAuthProvider();
     // Em alguns celulares o Custom Tab lidará com o Popup muito melhor do que o Redirect
     try {
