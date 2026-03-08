@@ -152,6 +152,7 @@ function loadDataFromFirestore(userId) {
                 });
             }
         });
+        // Apenas atualizar a interface se o campo de busca estiver ativo
         renderPasswords(searchInput.value);
         hideLoading();
     }, (error) => {
@@ -241,13 +242,17 @@ passwordForm.onsubmit = async (e) => {
         });
 
         // Como usamos onSnapshot, a lista será atualizada automaticamente!
-        // Só precisamos limpar o formulário
+        // A interface, no entanto, só deve mostrar as senhas se a barra de pesquisa tiver algum texto nela.
         inputCliente.value = '';
         inputPedido.value = '';
         inputSerie.value = '';
         inputSenha.value = '';
         inputCliente.focus();
         checkFormValid();
+        
+        // Vamos ocultar imediatamente a lista caso a barra de busca esteja vazia
+        // forçando a renderização inicial
+        renderPasswords(searchInput.value);
 
         showToast('Senha salva com sucesso!', 'success');
         hideSyncStatus();
