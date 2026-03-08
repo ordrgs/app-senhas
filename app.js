@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 /**
  * ==========================================
@@ -265,6 +265,21 @@ passwordForm.onsubmit = async (e) => {
     }
 };
 
+async function deletePassword(passwordId) {
+    if (!confirm("Tem certeza que deseja excluir esta senha?")) return;
+
+    showSyncStatus('Excluindo...', false);
+    try {
+        await deleteDoc(doc(db, "passwords", passwordId));
+        showToast('Senha excluída com sucesso!', 'success');
+        hideSyncStatus();
+    } catch (error) {
+        console.error("Erro ao excluir:", error);
+        showSyncStatus('Erro ao excluir.', true);
+        setTimeout(hideSyncStatus, 3000);
+    }
+}
+
 function renderPasswords(filter = '') {
     passwordListContainer.innerHTML = '';
 
@@ -313,7 +328,7 @@ function renderPasswords(filter = '') {
 
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'pwd-actions';
-
+            
             const copyBtn = document.createElement('button');
             copyBtn.className = 'btn-icon btn-copy';
             copyBtn.title = 'Copiar Senha';
@@ -324,8 +339,16 @@ function renderPasswords(filter = '') {
                     showToast('Senha copiada!', 'success');
                 });
             };
-
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-icon btn-delete';
+            deleteBtn.title = 'Excluir Senha';
+            deleteBtn.innerHTML = '<span class="material-icons-round">delete</span>';
+            deleteBtn.style.color = 'var(--error)';
+            deleteBtn.onclick = () => deletePassword(p.id);
+            
             actionsDiv.appendChild(copyBtn);
+            actionsDiv.appendChild(deleteBtn);
             pwdHeader.appendChild(clienteSpan);
             pwdHeader.appendChild(actionsDiv);
 
