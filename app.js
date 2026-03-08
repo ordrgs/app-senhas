@@ -1,5 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 /**
@@ -91,25 +90,27 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// Tratar o retorno do redirecionamento (caso tenha acabado de fazer login pelo celular)
-getRedirectResult(auth).then((result) => {
-    if (result) {
-        // Login com sucesso após redirecionamento (opcional: exibir toast)
-        console.log("Login realizado com sucesso");
-    }
-}).catch((error) => {
-    console.error("Erro no retorno do login:", error);
-    showToast('Erro ao retornar do login.', 'error');
-});
+// Adicionar feedback visual ao carregar o estado
+let isLoggingIn = false;
 
 btnLogin.onclick = async () => {
+    if (isLoggingIn) return;
+    
+    isLoggingIn = true;
+    const originalText = btnLogin.innerHTML;
+    btnLogin.innerHTML = '<span class="material-icons-round" style="animation: spin 1s linear infinite;">autorenew</span> Aguarde...';
+    
     const provider = new GoogleAuthProvider();
-    // Em dispositivos móveis, signInWithRedirect é 100% mais confiável que Popup.
+    // Em alguns celulares o Custom Tab lidará com o Popup muito melhor do que o Redirect
     try {
-        await signInWithRedirect(auth, provider);
+        await signInWithPopup(auth, provider);
+        // O onAuthStateChanged vai ser acionado sozinho
     } catch (error) {
         console.error("Erro ao iniciar login:", error);
-        showToast('Erro ao redirecionar para o Google.', 'error');
+        alert("Falha no login: " + error.message);
+        btnLogin.innerHTML = originalText;
+    } finally {
+        isLoggingIn = false;
     }
 };
 
